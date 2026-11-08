@@ -13,6 +13,9 @@ export const CONFIG = {
   BUTTON_HEIGHT: 36,
   BUTTON_PADDING: 8,
 
+  // Simulation
+  TICK_INTERVAL: 1000, // ms between production ticks
+
   // Colors
   COLORS: {
     background: '#111118',
@@ -25,7 +28,9 @@ export const CONFIG = {
     button: '#1c1c24',
     buttonActive: '#2e4a3e',
     buttonActiveBorder: '#4a7c59',
-    resource: '#a0a0b0'
+    resource: '#a0a0b0',
+    floatingPositive: '#6fcf97',
+    floatingNegative: '#eb5757'
   },
 
   // Starting resources
@@ -34,7 +39,10 @@ export const CONFIG = {
     energy: 100,
     material: 200,
     organics: 50
-  }
+  },
+
+  // Population
+  FOOD_PER_CITIZEN: 0.4   // organics consumed per citizen per tick
 };
 
 CONFIG.BASE_HEIGHT = Math.round(CONFIG.BASE_WIDTH / CONFIG.ASPECT_RATIO);
@@ -46,34 +54,46 @@ export const BUILDINGS = {
     name: 'Road',
     color: '#555566',
     requiresRoad: false,
-    cost: { credits: 5, material: 10 }
+    cost: { credits: 5, material: 10 },
+    production: {},
+    population: 0
   },
   house: {
     id: 'house',
     name: 'Habitat',
     color: '#4a7c59',
     requiresRoad: true,
-    cost: { credits: 40, material: 30, energy: 5 }
+    cost: { credits: 40, material: 30, energy: 5 },
+    production: {},
+    population: 4          // provides 4 citizens
   },
   solar: {
     id: 'solar',
     name: 'Solar Plant',
     color: '#c9a227',
     requiresRoad: true,
-    cost: { credits: 50, material: 40 }
+    cost: { credits: 50, material: 40 },
+    production: { energy: 3 },
+    population: 0
   },
   mine: {
     id: 'mine',
     name: 'Mine',
     color: '#8b5e3c',
     requiresRoad: true,
-    cost: { credits: 60, material: 20, energy: 10 }
+    cost: { credits: 60, material: 20, energy: 10 },
+    production: { material: 2 },
+    consumption: { energy: 1 },
+    population: 0
   },
   greenhouse: {
     id: 'greenhouse',
     name: 'Greenhouse',
     color: '#3d8b6e',
     requiresRoad: true,
-    cost: { credits: 45, material: 25, energy: 8 }
+    cost: { credits: 45, material: 25, energy: 8 },
+    production: { organics: 2 },
+    consumption: { energy: 1 },
+    population: 0
   }
 };
