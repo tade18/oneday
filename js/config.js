@@ -1,11 +1,14 @@
 export const CONFIG = {
+  // Economy
+  CREDITS_PER_CITIZEN: 0.3, // credits generated per citizen per tick
+
   // Canvas
   ASPECT_RATIO: 16 / 9,
   BASE_WIDTH: 1280,
 
   // Grid
-  GRID_COLS: 16,
-  GRID_ROWS: 9,
+  GRID_COLS: 32,
+  GRID_ROWS: 18,
   GRID_PADDING: 40,
 
   // UI
@@ -18,19 +21,19 @@ export const CONFIG = {
 
   // Colors
   COLORS: {
-    background: '#111118',
-    cellEmpty: '#1c1c24',
-    cellBorder: '#2a2a35',
-    text: '#888',
-    textHighlight: '#e0e0e0',
-    uiBackground: '#16161e',
-    uiBorder: '#2a2a35',
-    button: '#1c1c24',
-    buttonActive: '#2e4a3e',
-    buttonActiveBorder: '#4a7c59',
-    resource: '#a0a0b0',
-    floatingPositive: '#6fcf97',
-    floatingNegative: '#eb5757'
+    background: "#111118",
+    cellEmpty: "#1c1c24",
+    cellBorder: "#2a2a35",
+    text: "#888",
+    textHighlight: "#e0e0e0",
+    uiBackground: "#16161e",
+    uiBorder: "#2a2a35",
+    button: "#1c1c24",
+    buttonActive: "#2e4a3e",
+    buttonActiveBorder: "#4a7c59",
+    resource: "#a0a0b0",
+    floatingPositive: "#6fcf97",
+    floatingNegative: "#eb5757",
   },
 
   // Starting resources
@@ -38,11 +41,11 @@ export const CONFIG = {
     credits: 500,
     energy: 100,
     material: 200,
-    organics: 50
+    organics: 50,
   },
 
   // Population
-  FOOD_PER_CITIZEN: 0.4   // organics consumed per citizen per tick
+  FOOD_PER_CITIZEN: 0.4, // organics consumed per citizen per tick
 };
 
 CONFIG.BASE_HEIGHT = Math.round(CONFIG.BASE_WIDTH / CONFIG.ASPECT_RATIO);
@@ -50,50 +53,60 @@ CONFIG.BASE_HEIGHT = Math.round(CONFIG.BASE_WIDTH / CONFIG.ASPECT_RATIO);
 // Building definitions
 export const BUILDINGS = {
   road: {
-    id: 'road',
-    name: 'Road',
-    color: '#555566',
+    id: "road",
+    name: "Road",
+    color: "#555566",
     requiresRoad: false,
     cost: { credits: 5, material: 10 },
     production: {},
-    population: 0
+    population: 0,
   },
   house: {
-    id: 'house',
-    name: 'Habitat',
-    color: '#4a7c59',
+    id: "house",
+    name: "Habitat",
+    color: "#4a7c59",
     requiresRoad: true,
     cost: { credits: 40, material: 30, energy: 5 },
     production: {},
-    population: 4          // provides 4 citizens
+    population: 4, // provides 4 citizens
   },
   solar: {
-    id: 'solar',
-    name: 'Solar Plant',
-    color: '#c9a227',
+    id: "solar",
+    name: "Solar Plant",
+    color: "#c9a227",
     requiresRoad: true,
     cost: { credits: 50, material: 40 },
     production: { energy: 3 },
-    population: 0
+    population: 0,
   },
   mine: {
-    id: 'mine',
-    name: 'Mine',
-    color: '#8b5e3c',
+    id: "mine",
+    name: "Mine",
+    color: "#8b5e3c",
     requiresRoad: true,
     cost: { credits: 60, material: 20, energy: 10 },
     production: { material: 2 },
     consumption: { energy: 1 },
-    population: 0
+    population: 0,
   },
   greenhouse: {
-    id: 'greenhouse',
-    name: 'Greenhouse',
-    color: '#3d8b6e',
+    id: "greenhouse",
+    name: "Greenhouse",
+    color: "#3d8b6e",
     requiresRoad: true,
     cost: { credits: 45, material: 25, energy: 8 },
     production: { organics: 2 },
     consumption: { energy: 1 },
-    population: 0
-  }
+    population: 0,
+  },
+  trading_post: {
+    id: "trading_post",
+    name: "Trading Post",
+    color: "#6b5b95",
+    requiresRoad: true,
+    cost: { credits: 80, material: 40, energy: 10 },
+    production: { credits: 4 },
+    consumption: { energy: 1, organics: 0.5 },
+    population: 0,
+  },
 };

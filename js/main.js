@@ -44,10 +44,20 @@ function productionTick() {
     }
   }
 
-  // 2. Population food consumption
+  canvas.addEventListener("mousemove", (e) => {
+    renderer.onMouseMove(e.clientX, e.clientY);
+  });
+
+  // 2. Population effects
   population.recalculate(grid);
+
+  // Food consumption
   const foodNeeded = population.getFoodConsumption();
   delta.organics -= foodNeeded;
+
+  // Credits from citizens (taxes)
+  const creditsFromPop = population.count * CONFIG.CREDITS_PER_CITIZEN;
+  delta.credits += creditsFromPop;
 
   // 3. Apply the delta and get real changes
   const changes = resources.applyDelta(delta);

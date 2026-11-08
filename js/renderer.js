@@ -8,6 +8,11 @@ export class Renderer {
     this.resources = resourceManager;
     this.population = population;
 
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.hoveredCell = null; // {col, row} or null
+    this.hoveredButton = null; // building id or null
+
     this.cellSize = 0;
     this.offsetX = 0;
     this.offsetY = 0;
@@ -103,6 +108,7 @@ export class Renderer {
 
     // 4. Floating texts (MUST be last so they are on top)
     this.drawFloatingTexts();
+    this.drawTooltip();
   }
 
   drawUI() {
@@ -180,6 +186,148 @@ export class Renderer {
       });
 
       x += buttonWidth + CONFIG.BUTTON_PADDING;
+    });
+  }
+
+  onMouseMove(clientX, clientY) {
+    const pos = this.getLogicalPos(clientX, clientY);
+    this.mouseX = pos.x;
+    this.mouseY = pos.y;
+
+    // Check button hover
+    this.hoveredButton = this.getButtonFromMouse(clientX, clientY);
+
+    // Check cell hover (only if not over a button)
+    if (!this.hoveredButton) {
+      this.hoveredCell = this.getCellFromMouse(clientX, clientY);
+    } else {
+      this.hoveredCell = null;
+    }
+
+    this.draw(); // redraw to show/hide tooltip
+  }
+
+  drawTooltip() {
+    const ctx = this.ctx;
+    let lines = [];
+    let title = "";
+
+    // Tooltip for building button
+    if (this.hoveredButton && BUILDINGS[this.hoveredButton]) {
+      const b = BUILDINGS[this.hoveredButton];
+      title = b.name;
+
+      // Cost
+      if (b.cost) {
+        const costParts = [];
+        for (const [key, val] of Object.entries(b.cost)) {
+          costParts.push(`${val} ${key}`);
+        }
+        if (costParts.length) lines.push(`Cost: ${costParts.join(", ")}`);
+      }
+
+      // Production
+      if (b.production && Object.keys(b.production).length) {
+        const parts = [];
+        for (const [key, val] of Object.entries(b.production)) {
+          parts.push(`+${val} ${key}`);
+        }
+        lines.push(`Produces: ${parts.join(", ")}`);
+      }
+
+      // Consumption
+      if (b.consumption && Object.keys(b.consumption).length) {
+        const parts = [];
+        for (const [key, val] of Object.entries(b.consumption)) {
+          parts.push(`-${val} ${key}`);
+        }
+        lines.push(`Consumes: ${parts.join(", ")}`);
+      }
+
+      // Population
+      if (b.population) {
+        lines.push(`Population: +${b.population}`);
+      }
+    }
+
+    // Tooltip for placed building on grid
+    else if (this.hoveredCell) {
+      const id = this.grid.getCell(this.hoveredCell.col, this.hoveredCell.row);
+      if (id && BUILDINGS[id]) {
+        const b = BUILDINGS[id];
+        title = b.name;
+
+        if (b.production && Object.keys(b.production).length) {
+          const parts = [];
+          for (const [key, val] of Object.entries(b.production)) {
+            parts.push(`+${val} ${key}`);
+          }
+          lines.push(`Produces: ${parts.join(", ")}`);
+        }
+
+        if (b.consumption && Object.keys(b.consumption).length) {
+          const parts = [];
+          for (const [key, val] of Object.entries(b.consumption)) {
+            parts.push(`-${val} ${key}`);
+          }
+          lines.push(`Consumes: ${parts.join(", ")}`);
+        }
+
+        if (b.population) {
+          lines.push(`Population: +${b.population}`);
+        }
+
+        if (lines.length === 0) {
+          lines.push("No production");
+        }
+      }
+    }
+
+    if (!title) return;
+
+    // Draw tooltip box
+    const padding = 10;
+    const lineHeight = 18;
+    ctx.font = "13px system-ui";
+
+    let maxWidth = ctx.measureText(title).width;
+    for (const line of lines) {
+      maxWidth = Math.max(maxWidth, ctx.measureText(line).width);
+    }
+
+    const boxWidth = maxWidth + padding * 2;
+    const boxHeight = padding * 2 + 20 + lines.length * lineHeight;
+
+    // Position (keep inside canvas)
+    let boxX = this.mouseX + 16;
+    let boxY = this.mouseY + 16;
+
+    if (boxX + boxWidth > CONFIG.BASE_WIDTH - 8) {
+      boxX = this.mouseX - boxWidth - 12;
+    }
+    if (boxY + boxHeight > CONFIG.BASE_HEIGHT - 8) {
+      boxY = this.mouseY - boxHeight - 12;
+    }
+
+    // Background
+    ctx.fillStyle = "rgba(20, 20, 28, 0.95)";
+    ctx.strokeStyle = "#444";
+    ctx.lineWidth = 1;
+    ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+    // Title
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 14px system-ui";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText(title, boxX + padding, boxY + padding);
+
+    // Lines
+    ctx.fillStyle = "#cccccc";
+    ctx.font = "13px system-ui";
+    lines.forEach((line, i) => {
+      ctx.fillText(line, boxX + padding, boxY + padding + 22 + i * lineHeight);
     });
   }
 
